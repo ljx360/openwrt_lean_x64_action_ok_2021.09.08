@@ -80,13 +80,15 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: load ext package
+      working-directory: /workdir
       run: |
         echo "load ext package"
-        cd openwrt
+        cd openwrt/package
         git clone https://github.com/liuran001/openwrt-packages
 
 
     - name: Update feeds
+      working-directory: /workdir
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: Install feeds
