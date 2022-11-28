@@ -36,7 +36,8 @@ env:
 jobs:
   build:
     #runs-on: ubuntu-22.04
-    runs-on: debian-11
+    #runs-on: debian-11
+    runs-on: debian-latest
 
     steps:
     - name: Checkout
