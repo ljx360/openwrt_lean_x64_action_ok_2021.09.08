@@ -21,7 +21,7 @@ on:
       url: 
         description: 'input .config url'
         required: false
-        default: 'http://www.baidu.com'
+        default: 'https://www.baidu.com/index.html'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -49,6 +49,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
       
+
+    - name: update os
+       run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install wget curl
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        
+        echo ""
+        echo "mkdir"
+        #mkdir -p /workdir/openwrt
+        #mkdir
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p $GIT_DST_DIR
+        sudo chown -R $USER:$GROUPS /workdir
+        
+
     - name: show_url
       if: (github.event.inputs.url != '')
       run: |
@@ -61,6 +79,11 @@ jobs:
         echo -e ""
         echo -e "url:${{github.event.inputs.url}}"
 
+        sudo -E wget ${{github.event.inputs.url}} -o ${GIT_DST_DIR}/.config
+        
+        
+        sudo -E ls -l ${GIT_DST_DIR}
+        sudo -E cat ${GIT_DST_DIR}/.config
 
         echo -e ""
         echo -e "df"
