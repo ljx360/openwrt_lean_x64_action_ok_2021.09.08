@@ -21,7 +21,7 @@ on:
       url: 
         description: 'input .config url'
         required: false
-        default: ''
+        default: 'http://www.baidu.com'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -52,8 +52,12 @@ jobs:
     - name: show_url
       if: (github.event.inputs.url != '')
       run: |
+        echo ""
+        echo "url:$url"
+        
         echo -e ""
         echo -e "url:$url"
+        
         
         echo -e ""
         echo -e "df"
