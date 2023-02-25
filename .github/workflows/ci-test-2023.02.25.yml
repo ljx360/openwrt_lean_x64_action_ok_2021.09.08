@@ -52,7 +52,7 @@ jobs:
     - name: show_url
       if: (github.event.inputs.ssh != '')
       run: |
-        echo -e "
+        echo -e ""
         echo -e "url:$url"
         
         echo -e ""
