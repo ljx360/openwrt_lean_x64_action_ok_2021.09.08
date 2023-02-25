@@ -53,12 +53,15 @@ jobs:
       if: (github.event.inputs.url != '')
       run: |
         echo ""
-        echo "url:$url"
+        echo "url:${{github.event.inputs.url}}"
         
         echo -e ""
         echo -e "url:$url"
         
-        
+        echo -e ""
+        echo -e "url:${{github.event.inputs.url}}"
+
+
         echo -e ""
         echo -e "df"
         df -hT
