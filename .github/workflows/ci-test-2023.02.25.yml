@@ -47,10 +47,14 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      #uses: actions/checkout@main
       
     - name: show_url
       if: (github.event.inputs.ssh != '')
       run: |
-        echo "url:$url"
+        echo -e "
+        echo -e "url:$url"
+        
+        echo -e ""
+        echo -e "df"
         df -hT
