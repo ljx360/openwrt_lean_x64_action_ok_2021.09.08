@@ -50,11 +50,11 @@ jobs:
       uses: actions/checkout@main
       
     - name: show_url
-      if: (github.event.inputs.ssh != '')
+      if: (github.event.inputs.url != '')
       run: |
-        echo ""
-        echo "url:$url"
+        echo -e ""
+        echo -e "url:$url"
         
-        echo ""
-        echo "df"
+        echo -e ""
+        echo -e "df"
         df -hT
