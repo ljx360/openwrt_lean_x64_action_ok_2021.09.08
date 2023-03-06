@@ -21,7 +21,7 @@ on:
       url:
         description: 'input .config url'
         required: false
-        default: 'false'
+        default: 'http://www.baidu.com/index.html'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -63,8 +63,8 @@ jobs:
       run: |
         echo "down config from ${{github.event.inputs.url}} to ${CONFIG_FILE_FULL_PATH}"
         wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
-        [ -f "$CONFIG_FILE_FULL_PATH" ] && sudo cat "$CONFIG_FILE_FULL_PATH"
-        [ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
+        #[ -f "$CONFIG_FILE_FULL_PATH" ] && sudo cat "$CONFIG_FILE_FULL_PATH"
+        #[ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
     
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
