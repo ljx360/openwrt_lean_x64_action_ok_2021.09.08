@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build lean+ext+tpl,ljx,2023.03.06
+name: Build lean+ext+tpl,ljx,2023.03.06-v2
 
 on:
   repository_dispatch:
