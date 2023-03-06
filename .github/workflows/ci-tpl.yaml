@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build lean+ext,ljx,2023.03.06
+name: Build lean+ext+tpl,ljx,2023.03.06
 
 on:
   repository_dispatch:
@@ -61,9 +61,10 @@ jobs:
       working-directory: /workdir
       if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
-        echo "down config from ${{github.event.inputs.url}}"
-        wget -d ${{github.event.inputs.url}} -O "$CONFIG_FILE_FULL_PATH"
-        sudo cat "$CONFIG_FILE_FULL_PATH"
+        echo "down config from ${{github.event.inputs.url}} to ${CONFIG_FILE_FULL_PATH}"
+        wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
+        [ -f "$CONFIG_FILE_FULL_PATH" ] && sudo cat "$CONFIG_FILE_FULL_PATH"
+        [ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
     
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
