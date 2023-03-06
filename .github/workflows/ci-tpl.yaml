@@ -55,6 +55,7 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir/openwrt
         sudo chown $USER:$GROUPS /workdir
+        sudo chmod -R 777 /workdir
 
 
     - name: down [.config] from config
