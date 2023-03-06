@@ -10,9 +10,7 @@ echo "touch $file2"
 touch $file2
 fi
 
-for line in `cat $file1`;do
-echo $line>>$file2
-done
+echo $file1>>$file2
 
 else
 
