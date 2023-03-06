@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: ci-test,2023.02.25
+name: Build lean+ext+tpl,ljx,2023.03.06
 
 on:
   repository_dispatch:
@@ -17,20 +17,21 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        default: 'false'
-      url: 
+        default: 'true'
+      url:
         description: 'input .config url'
         required: false
-        default: 'https://www.baidu.com/index.html'
+        default: 'http://www.baidu.com/index.html'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
-  GIT_DST_PATH: /workdir/openwrt
+  CONFIG_FILE_FULL_PATH: /workdir/ljx/config_ext
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
+  DIY_LJX_APPEND_SH: diy_ljx_append.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -40,7 +41,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     #runs-on: debian-11
     #runs-on: debian-latest
     #runs-on: ubuntu-latest
@@ -48,43 +49,34 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@main
-      
 
-    - name: update os
+
+    - name: init
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install wget curl
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
-        
-        echo ""
-        echo "mkdir"
-        #mkdir -p /workdir/openwrt
-        #mkdir
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p $GIT_DST_DIR
+        sudo mkdir -p /workdir/ljx
+        sudo mkdir -p /workdir/openwrt
         sudo chown -R $USER:$GROUPS /workdir
-        
+        #sudo chmod -R 777 /workdir
+        sudo du -ah
 
-    - name: show_url
-      if: (github.event.inputs.url != '')
+
+    - name: down [.config] from config
+      working-directory: /workdir
+      if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
-        echo ""
-        echo "url:${{github.event.inputs.url}}"
+        echo "down config from ${{github.event.inputs.url}} to ${CONFIG_FILE_FULL_PATH}"
+        wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
+        [ -f "$CONFIG_FILE_FULL_PATH" ] && sudo cat "$CONFIG_FILE_FULL_PATH"
+        [ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
         
-        echo -e ""
-        echo -e "url:$url"
+        #run diy_sh
+        [ -f $DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;cd openwrt;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;cat /workdir/openwrt/.config
+    
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         
-        echo -e ""
-        echo -e "url:${{github.event.inputs.url}}"
-
-        sudo -E wget ${{github.event.inputs.url}} -o ${GIT_DST_DIR}/.config
-        
-        
-        sudo -E ls -l ${GIT_DST_DIR}
-        sudo -E cat ${GIT_DST_DIR}/.config
-
-        echo -e ""
-        echo -e "df"
-        df -hT
