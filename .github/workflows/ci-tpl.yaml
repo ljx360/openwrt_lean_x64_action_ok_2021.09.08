@@ -62,7 +62,8 @@ jobs:
       if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
         echo "down config from ${{github.event.inputs.url}} to ${CONFIG_FILE_FULL_PATH}"
-        wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
+        #wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
+        wget -d -O /workdir/openwrt/.config "http://www.baidu.com/index.html"
         #[ -f "$CONFIG_FILE_FULL_PATH" ] && sudo cat "$CONFIG_FILE_FULL_PATH"
         #[ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
     
