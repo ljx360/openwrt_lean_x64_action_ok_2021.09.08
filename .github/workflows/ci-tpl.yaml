@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build lean+ext,tpl,ljx,2023.03.06
+name: Build lean+ext,ljx,2023.03.06
 
 on:
   repository_dispatch:
@@ -17,17 +17,18 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        default: 'false'
+        default: 'true'
       url:
         description: 'input .config url'
         required: false
-        default: 'false'        
+        default: 'false'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
+  CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: true
@@ -49,12 +50,20 @@ jobs:
       uses: actions/checkout@main
 
 
+    - name: init
+      run: |
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+
     - name: down [.config] from config
       working-directory: /workdir
       if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
         echo "down config from ${{github.event.inputs.url}}"
-        wget -d ${{github.event.inputs.url}} -O /workdir/openwrt/.config
+        wget -d ${{github.event.inputs.url}} -O "$CONFIG_FILE_FULL_PATH"
+        sudo cat "$CONFIG_FILE_FULL_PATH"
     
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
