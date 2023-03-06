@@ -19,7 +19,7 @@ on:
         required: false
         default: 'false'
       url:
-        description: 'input .config url'
+        description: 'input ext config url'
         required: false
         default: 'http://www.baidu.com/index.html'
 
@@ -83,8 +83,8 @@ jobs:
         
         
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        sudo mkdir -p /workdir/ljx
+        sudo chown -R $USER:$GROUPS /workdir
         
     - name: Clone source code
       working-directory: /workdir
@@ -123,7 +123,7 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: down [.config] from config
+    - name: down [diy config] from url
       working-directory: /workdir
       if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
@@ -133,7 +133,7 @@ jobs:
         [ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
         
         #run diy_sh
-        [ -f $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;cat /workdir/openwrt/.config
+        [ -f $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH
         
 
     - name: SSH connection to Actions
