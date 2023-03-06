@@ -71,7 +71,7 @@ jobs:
         [ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
         
         #run diy_sh
-        [ -f $DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;cd openwrt;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;cat /workdir/openwrt/.config
+        [ -f $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;cat /workdir/openwrt/.config
     
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
