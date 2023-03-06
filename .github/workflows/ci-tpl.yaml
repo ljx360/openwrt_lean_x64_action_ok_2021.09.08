@@ -53,7 +53,7 @@ jobs:
     - name: init
       run: |
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
+        sudo mkdir -p /workdir/openwrt
         sudo chown $USER:$GROUPS /workdir
 
 
@@ -61,9 +61,10 @@ jobs:
       working-directory: /workdir
       if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
+        #[ ! -d /workdir/openwrt ] && mkdir /workdir/openwrt;ch
         echo "down config from ${{github.event.inputs.url}} to ${CONFIG_FILE_FULL_PATH}"
-        #wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
-        wget -d -O /workdir/openwrt/.config "http://www.baidu.com/index.html"
+        wget -d -O "$CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
+        #wget -d -O /workdir/openwrt/.config "http://www.baidu.com/index.html"
         #[ -f "$CONFIG_FILE_FULL_PATH" ] && sudo cat "$CONFIG_FILE_FULL_PATH"
         #[ ! -f "$CONFIG_FILE_FULL_PATH" ] && echo miss "$CONFIG_FILE_FULL_PATH"
     
