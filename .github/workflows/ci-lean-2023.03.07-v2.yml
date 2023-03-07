@@ -21,7 +21,7 @@ on:
       url:
         description: 'input ext config url'
         required: false
-        default: 'http://www.baidu.com/index.html'
+        default: 'false'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -144,8 +144,8 @@ jobs:
     - name: ljx diy copy .config
       working-directory: /workdir
       run: |
-        echo "copy ${DIY_CONFIG_FILE_FULL_PATH} to ${CONFIG_FILE_FULL_PATH}"
-        [ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && sudo cp ${DIY_CONFIG_FILE_FULL_PATH} ${CONFIG_FILE_FULL_PATH}
+        [ ! -f ${CONFIG_FILE_FULL_PATH} ] && echo "copy ${DIY_CONFIG_FILE_FULL_PATH} to ${CONFIG_FILE_FULL_PATH}"
+        [ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && cp ${DIY_CONFIG_FILE_FULL_PATH} ${CONFIG_FILE_FULL_PATH}
         [ ! -f "$DIY_CONFIG_FILE_FULL_PATH" ] && echo miss "$DIY_CONFIG_FILE_FULL_PATH"
         
         #run diy_sh
