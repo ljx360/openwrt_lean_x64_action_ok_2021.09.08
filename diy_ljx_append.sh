@@ -17,3 +17,11 @@ else
 echo "miss $file1"
 
 fi
+
+
+
+if [ -f $file2 ];then
+echo "show .config"
+echo "path:$file2"
+cat $file2
+fi
