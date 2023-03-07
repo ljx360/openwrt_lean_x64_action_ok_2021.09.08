@@ -39,7 +39,8 @@ env:
   
   #ljx diy
   CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
-  DIY_CONFIG_FILE_FULL_PATH: /workdir/ljx/config_ext
+  #DIY_CONFIG_FILE_FULL_PATH: /workdir/ljx/config_ext
+  DIY_CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
   DIY_LJX_APPEND_SH: diy_ljx_append.sh
 
 jobs:
@@ -89,19 +90,6 @@ jobs:
         sudo mkdir -p /workdir/ljx
         sudo chown -R $USER:$GROUPS /workdir
 
-    - name: down [diy config] from url
-      working-directory: /workdir
-      if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
-      run: |
-        echo "down config from ${{github.event.inputs.url}} to ${DIY_CONFIG_FILE_FULL_PATH}"
-        wget -d -O "$DIY_CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
-        #[ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && sudo cat "$DIY_CONFIG_FILE_FULL_PATH"
-        #[ ! -f "$DIY_CONFIG_FILE_FULL_PATH" ] && echo miss "$DIY_CONFIG_FILE_FULL_PATH"
-        
-        #run diy_sh
-        #[ -f $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH
-        #replace to .config
-        #cp $DIY_CONFIG_FILE_FULL_PATH /workdir/openwrt/.config
 
         
     - name: Clone source code
@@ -141,17 +129,22 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: ljx diy copy .config
+
+
+    - name: down [diy config] from url
       working-directory: /workdir
+      if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
-        [ ! -f ${CONFIG_FILE_FULL_PATH} ] && echo "copy ${DIY_CONFIG_FILE_FULL_PATH} to ${CONFIG_FILE_FULL_PATH}"
-        [ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && cp ${DIY_CONFIG_FILE_FULL_PATH} ${CONFIG_FILE_FULL_PATH}
-        [ ! -f "$DIY_CONFIG_FILE_FULL_PATH" ] && echo miss "$DIY_CONFIG_FILE_FULL_PATH"
+        echo "down config from ${{github.event.inputs.url}} to ${DIY_CONFIG_FILE_FULL_PATH}"
+        wget -d -O "$DIY_CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
+        #[ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && sudo cat "$DIY_CONFIG_FILE_FULL_PATH"
+        #[ ! -f "$DIY_CONFIG_FILE_FULL_PATH" ] && echo miss "$DIY_CONFIG_FILE_FULL_PATH"
         
         #run diy_sh
         #[ -f $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH
         #replace to .config
         #cp $DIY_CONFIG_FILE_FULL_PATH /workdir/openwrt/.config
+
         
 
     - name: SSH connection to Actions
