@@ -109,7 +109,7 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH /workdir/openwrt
         
         echo ""
-        echo "mklink to $GITHUB_WORKSPACE/openwrt"
+        echo "mklink [/workdir/openwrt] to [$GITHUB_WORKSPACE/openwrt]"
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         
         echo ""
@@ -117,7 +117,7 @@ jobs:
         ls -al /workdir
         
         echo ""
-        echo "ls -al /$GITHUB_WORKSPACE"
+        echo "ls -al $GITHUB_WORKSPACE"
         ls -al /$GITHUB_WORKSPACE
 
     - name: Load custom feeds,p1.sh
@@ -151,11 +151,11 @@ jobs:
     - name: Load custom configuration,p2.sh
       working-directory: /workdir
       run: |
-        cd /$GITHUB_WORKSPACE
+        cd $GITHUB_WORKSPACE
         [ -e files ] && mv files /workdir/openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE /workdir/openwrt/.config
         chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
-        cd /$GITHUB_WORKSPACE/openwrt
+        cd /workdir/openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
 
@@ -173,7 +173,7 @@ jobs:
         #[ -f $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH
         #replace to .config
         #cp $DIY_CONFIG_FILE_FULL_PATH /workdir/openwrt/.config
-
+        [ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && cat $DIY_CONFIG_FILE_FULL_PATH
         
 
     - name: SSH connection to Actions
