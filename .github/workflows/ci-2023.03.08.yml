@@ -60,6 +60,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        echo -e ""
         echo -e "apt-get"
         #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         
@@ -90,7 +91,6 @@ jobs:
         
 
     - name: init arg
-      working-directory: /workdir
       run: |
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir/ljx
