@@ -88,6 +88,10 @@ jobs:
         #sudo chown $USER:$GROUPS /workdir
         
         
+
+    - name: init arg
+      working-directory: /workdir
+      run: |
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir/ljx
         sudo chown -R $USER:$GROUPS /workdir
@@ -99,9 +103,21 @@ jobs:
       run: |
         df -hT $PWD
         [ -d /workdir/openwrt ] && rm -rf /workdir/openwrt
+        
+        echo ""
+        echo "clone $REPO_URL"
         git clone $REPO_URL -b $REPO_BRANCH /workdir/openwrt
+        
+        echo ""
+        echo "mklink to $GITHUB_WORKSPACE/openwrt"
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+        echo ""
+        echo "ls -al /workdir"
         ls -al /workdir
+        
+        echo ""
+        echo "ls -al /$GITHUB_WORKSPACE"
         ls -al /$GITHUB_WORKSPACE
 
     - name: Load custom feeds,p1.sh
@@ -147,6 +163,7 @@ jobs:
     - name: down [diy config] from url
       if: (github.event.inputs.url != 'false' && github.event.inputs.url != '')
       run: |
+        echo ""
         echo "down config from ${{github.event.inputs.url}} to ${DIY_CONFIG_FILE_FULL_PATH}"
         wget -d -O "$DIY_CONFIG_FILE_FULL_PATH" "${{github.event.inputs.url}}"
         [ -f "$DIY_CONFIG_FILE_FULL_PATH" ] && echo "downloaded $DIY_CONFIG_FILE_FULL_PATH"
