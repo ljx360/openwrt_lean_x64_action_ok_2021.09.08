@@ -1,0 +1,82 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
+
+name: Build tpl,ljx,2023.03.09
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+      url:
+        description: 'input ext config url'
+        required: false
+        default: 'false'
+
+      x86:
+        description: 'input x86 .config'
+        required: false
+        default: 'false'
+
+      x64:
+        description: 'input x64 .config'
+        required: false
+        default: 'false'
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: .config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  
+  #ljx diy
+  CONFIG_WORKDIR: /workdir
+  CONFIG_WORKDIR_OPENWRT: /workdir/openwrt
+  CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
+  DIY_CONFIG_EXT_FILE_FULL_PATH: /workdir/ljx/config_ext
+  DIY_CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
+  DIY_LJX_APPEND_SH: diy_ljx_append.sh
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    #runs-on: debian-11
+    #runs-on: debian-latest
+    #runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      
+      
+    - name: test if
+      if ( [ -f ${CONFIG_FILE_FULL_PATH} ] )
+      run: |
+        echo ""
+        echo "test exist file:CONFIG_FILE_FULL_PATH"
+      
+    - name: down x86 config from arg
+      if: (github.event.inputs.x86 != 'false' && github.event.inputs.x86 != '')
+      run: |
+        echo ""
+        echo "down [${{github.event.inputs.x86}}] to [${DIY_CONFIG_EXT_FILE_FULL_PATH}]"
+        #cd $GITHUB_WORKSPACE
+        #[ -f ${{github.event.inputs.x86}} ] && cp ${{github.event.inputs.x86}} ${DIY_CONFIG_EXT_FILE_FULL_PATH}
