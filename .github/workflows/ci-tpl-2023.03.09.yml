@@ -68,7 +68,7 @@ jobs:
       
       
     - name: test if
-      if: ( [ -f ${CONFIG_FILE_FULL_PATH} ] )
+      if: (  -f ${CONFIG_FILE_FULL_PATH}  )
       run: |
         echo ""
         echo "test exist file:CONFIG_FILE_FULL_PATH"
