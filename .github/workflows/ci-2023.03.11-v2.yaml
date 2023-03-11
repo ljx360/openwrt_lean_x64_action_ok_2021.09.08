@@ -160,7 +160,13 @@ jobs:
         echo "cp .config to /workdir/openwrt/.config"
         cd $GITHUB_WORKSPACE
         [ -e files ] && mv files /workdir/openwrt/files
+        [ ! -e files ] && echo "";echo "not exist [files]"
+        
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE /workdir/openwrt/.config
+        [ ! -e $CONFIG_FILE ] && echo "";echo "not exist $CONFIG_FILE"
+        
+        echo ""
+        echo "try run [$GITHUB_WORKSPACE/$DIY_P2_SH]"
         chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
         cd /workdir/openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
