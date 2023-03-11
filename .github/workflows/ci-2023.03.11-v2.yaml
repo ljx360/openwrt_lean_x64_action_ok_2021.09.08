@@ -193,12 +193,12 @@ jobs:
         
         
         #下载成功
-        [ -e "${DIY_CONFIG_EXT_FILE_FULL_PATH}" ] && echo "";echo "downloaded [${{github.event.inputs.config_url}}] success to [${DIY_CONFIG_EXT_FILE_FULL_PATH}]"
+        [ -e ${DIY_CONFIG_EXT_FILE_FULL_PATH} ] && echo "";echo "downloaded [${{github.event.inputs.config_url}}] success to [${DIY_CONFIG_EXT_FILE_FULL_PATH}]"
         
         
         #尝试复制文件
-        [ ! -e "${DIY_CONFIG_FILE_FULL_PATH}" && -e "${DIY_CONFIG_EXT_FILE_FULL_PATH}" ] && echo "";echo "cp [${DIY_CONFIG_EXT_FILE_FULL_PATH}] to [${DIY_CONFIG_FILE_FULL_PATH}]";cp ${DIY_CONFIG_EXT_FILE_FULL_PATH} to ${DIY_CONFIG_FILE_FULL_PATH}
-        [ ! -e "${DIY_CONFIG_FILE_FULL_PATH}" ] && echo "miss $DIY_CONFIG_FILE_FULL_PATH"
+        [ ! -e ${DIY_CONFIG_FILE_FULL_PATH} && -e ${DIY_CONFIG_EXT_FILE_FULL_PATH} ] && echo "";echo "cp [${DIY_CONFIG_EXT_FILE_FULL_PATH}] to [${DIY_CONFIG_FILE_FULL_PATH}]";cp ${DIY_CONFIG_EXT_FILE_FULL_PATH} ${DIY_CONFIG_FILE_FULL_PATH}
+        [ ! -e ${DIY_CONFIG_FILE_FULL_PATH} ] && echo "miss $DIY_CONFIG_FILE_FULL_PATH"
         
         #run diy_sh
         #[ -e $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH ] && chmod +x $GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH;$GITHUB_WORKSPACE/$DIY_LJX_APPEND_SH
