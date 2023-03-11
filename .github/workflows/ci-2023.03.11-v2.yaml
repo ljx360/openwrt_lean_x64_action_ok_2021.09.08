@@ -191,8 +191,13 @@ jobs:
         echo "down config from [${{github.event.inputs.config_url}}] to [${DIY_CONFIG_FILE_FULL_PATH}]"
         wget -d -O "$DIY_CONFIG_EXT_FILE_FULL_PATH" "${{github.event.inputs.config_url}}"
         
-        [ -e "${DIY_CONFIG_EXT_FILE_FULL_PATH}" ] && echo "";echo "downloaded [${{github.event.inputs.config_url}}] success to [${DIY_CONFIG_FILE_FULL_PATH}]"
-        [ ! -e "${DIY_CONFIG_FILE_FULL_PATH}" && -e "${DIY_CONFIG_EXT_FILE_FULL_PATH}" ] && echo "";echo "cp [${DIY_CONFIG_EXT_FILE_FULL_PATH}] to [${DIY_CONFIG_FILE_FULL_PATH}]";cp ${DIY_CONFIG_EXT_FILE_FULL_PATH} to [${DIY_CONFIG_FILE_FULL_PATH}]
+        
+        #下载成功
+        [ -e "${DIY_CONFIG_EXT_FILE_FULL_PATH}" ] && echo "";echo "downloaded [${{github.event.inputs.config_url}}] success to [${DIY_CONFIG_EXT_FILE_FULL_PATH}]"
+        
+        
+        #尝试复制文件
+        [ ! -e "${DIY_CONFIG_FILE_FULL_PATH}" && -e "${DIY_CONFIG_EXT_FILE_FULL_PATH}" ] && echo "";echo "cp [${DIY_CONFIG_EXT_FILE_FULL_PATH}] to [${DIY_CONFIG_FILE_FULL_PATH}]";cp ${DIY_CONFIG_EXT_FILE_FULL_PATH} to ${DIY_CONFIG_FILE_FULL_PATH}
         [ ! -e "${DIY_CONFIG_FILE_FULL_PATH}" ] && echo "miss $DIY_CONFIG_FILE_FULL_PATH"
         
         #run diy_sh
