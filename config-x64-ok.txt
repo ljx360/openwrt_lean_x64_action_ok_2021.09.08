@@ -57,6 +57,7 @@ luci-app-baidupcs-web=y
 luci-app-minidlna=y
 luci-app-nlbwmon=y
 
+#lxc
 luci-app-lxc=y
 luci-app-transmission=y
 luci-app-ttyd=y
