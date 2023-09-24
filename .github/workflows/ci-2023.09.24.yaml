@@ -1,0 +1,438 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
+
+
+# use arg ssh,package
+
+
+name: Build lean+package,ljx,2023.09.24
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      config_openwrt_url:
+        description: 'input_openwrt_url'
+        required: false
+        default: 'https://github.com/coolsnowwolf/lede'
+
+      config_openwrt_branch:
+        description: 'input_openwrt_branch'
+        required: false
+        default: 'master'
+
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+      config_url:
+        description: 'input .config url'
+        required: false
+        default: 'false'
+
+      config_path:
+        description: 'input .config path'
+        required: false
+        default: 'false'
+
+      config_add_package:
+        description: 'is add package,run ljx_package.sh'
+        required: false
+        default: 'false'
+
+      config_add_date_to_grub_title:
+        description: 'add current date to title'
+        required: false
+        default: 'true'
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: .config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  
+  #ljx diy
+  CONFIG_WORKDIR: /workdir
+  CONFIG_WORKDIR_OPENWRT: /workdir/openwrt
+  CONFIG_WORKDIR_OPENWRT_PACKAGE: /workdir/openwrt/package
+  CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
+  DIY_CONFIG_EXT_FILE_FULL_PATH: /workdir/openwrt/ljx_ext.config
+  DIY_CONFIG_FILE_FULL_PATH: /workdir/openwrt/.config
+  DIY_LJX_APPEND_SH: ljx_append.sh
+  DIY_LJX_PACKAGE_SH: ljx_package.sh
+  DIY_LJX_SH: ljx.sh
+  
+  #ljx ext
+  #LJX_DOWN_CONFIG_BY_URL_SH: ljx_down_config_by_url.sh
+  #LJX_COPY_CONFIG_BY_PATH_SH: ljx_cp_config_by_path.sh
+
+jobs:
+  build:
+    #runs-on: debian-12
+    #runs-on: debian-11
+    #runs-on: debian-latest
+    
+    #runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
+    #runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        echo -e ""
+        echo -e "init os"
+
+
+    - name: init arg
+      run: |
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir/ljx
+        sudo chown -R $USER:$GROUPS /workdir
+
+
+
+    - name: df-1
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "df $PWD"
+        df -hT $PWD
+
+
+    - name: apt-get
+      run: |
+        echo -e ""
+        echo -e "apt-get"
+        #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        
+        #2022.11.28
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        #sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2204)
+        #sudo -E apt-get -qq install ack antlr3 aria2 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev python3-setuptools
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        
+        #2021.05.25
+        #sudo -E apt-get -qq update
+        #sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
+        #sudo -E apt-get -qq autoremove --purge
+        #sudo -E apt-get -qq clean
+        
+        
+        #2021.09.04
+        #sudo apt-get update
+        #sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl swig rsync
+        
+        
+        #sudo timedatectl set-timezone "$TZ"
+        #sudo mkdir -p /workdir
+        #sudo chown $USER:$GROUPS /workdir
+        
+        
+    - name: df-2
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "df $PWD"
+        df -hT $PWD
+
+    - name: update openwrt git url
+      if: (github.event.inputs.config_openwrt_url != '' && github.event.inputs.config_openwrt_url  != 'false')
+      run: |
+        echo "update REPO_URL url to ${{github.event.inputs.config_openwrt_url}}"
+        REPO_URL=${{github.event.inputs.config_openwrt_url}}
+        echo "now REPO_URL is [${REPO_URL}]"
+
+    - name: update openwrt git branch
+      if: (github.event.inputs.config_openwrt_branch != '' && github.event.inputs.config_openwrt_branch  != 'false')
+      run: |
+        echo "update REPO_BRANCH to ${{github.event.inputs.config_openwrt_branch}}"
+        REPO_BRANCH=${{github.event.inputs.config_openwrt_branch}}
+        echo "now REPO_BRANCH is [${REPO_BRANCH}]"
+
+        
+    - name: Clone source code
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        [ -d /workdir/openwrt ] && rm -rf /workdir/openwrt
+        
+        echo ""
+        echo "clone $REPO_URL"
+        git clone $REPO_URL -b $REPO_BRANCH /workdir/openwrt
+        #ljx
+        
+        
+        echo ""
+        echo "mklink [/workdir/openwrt] to [$GITHUB_WORKSPACE/openwrt]"
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+        echo ""
+        echo "ls -al /workdir"
+        ls -al /workdir
+        
+        echo ""
+        echo "ls -al $GITHUB_WORKSPACE"
+        ls -al /$GITHUB_WORKSPACE
+
+    - name: df-3
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "df $PWD"
+        df -hT $PWD
+
+    - name: Load custom feeds,p1.sh
+      working-directory: /workdir
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        #cd /workdir
+        cd /workdir/openwrt
+        chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+
+    - name: load ext package
+      working-directory: /workdir
+      run: |
+        echo "load ext package"
+        #cd openwrt/package
+        #git clone https://github.com/liuran001/openwrt-packages
+
+
+    - name: ljx,load more package
+      if: (github.event.inputs.config_add_package != '' && github.event.inputs.config_add_package  != 'false')
+      working-directory: /workdir
+      run: |
+        echo "load more package"
+    
+        #sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
+        #sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default
+        #git pull
+        cd /workdir/openwrt
+        [ -f $GITHUB_WORKSPACE/$DIY_LJX_PACKAGE_SH ] && echo try $GITHUB_WORKSPACE/$DIY_LJX_PACKAGE_SH && sudo chmod +x $GITHUB_WORKSPACE/$DIY_LJX_PACKAGE_SH && cd $CONFIG_WORKDIR_OPENWRT_PACKAGE && $GITHUB_WORKSPACE/$DIY_LJX_PACKAGE_SH
+
+
+    - name: Update feeds
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "update feeds"
+        cd /workdir/openwrt
+        ./scripts/feeds update -a
+
+    - name: Install feeds
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "install feeds"
+        cd /workdir/openwrt
+        ./scripts/feeds install -a
+
+    - name: Load custom configuration,p2.sh
+      working-directory: /workdir
+      run: |
+        echo ""
+        echo "try cp .config to /workdir/openwrt/.config"
+        cd $GITHUB_WORKSPACE
+        [ -e files ] && echo "cp .config" && mv files /workdir/openwrt/files
+        [ ! -e files ] && echo "";echo "not exist [files]"
+        
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE /workdir/openwrt/.config
+        [ ! -e $CONFIG_FILE ] && echo "";echo "not exist $CONFIG_FILE"
+        
+        echo ""
+        echo "try run [$GITHUB_WORKSPACE/$DIY_P2_SH]"
+        chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
+        cd /workdir/openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+
+
+
+    - name: ljx,run shell [ljx_down_config_by_url.sh]
+      if: (github.event.inputs.config_url != '' && github.event.inputs.config_url  != 'false')
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "down config by url [${{github.event.inputs.config_url}}] to [${DIY_CONFIG_EXT_FILE_FULL_PATHCONFIG_FILE_FULL_PATH}]"
+        #[ ! -d $CONFIG_WORKDIR_OPENWRT ] && sudo mkdir -p $CONFIG_WORKDIR_OPENWRT;sudo chmod -R 777 $CONFIG_WORKDIR_OPENWRT
+        #[ -f $GITHUB_WORKSPACE/$LJX_DOWN_CONFIG_BY_URL_SH ] && sudo chmod 777 $GITHUB_WORKSPACE/$LJX_DOWN_CONFIG_BY_URL_SH;$GITHUB_WORKSPACE/$LJX_DOWN_CONFIG_BY_URL_SH ${{github.event.inputs.config_url}} ${DIY_CONFIG_EXT_FILE_FULL_PATH}
+        wget -O ${DIY_CONFIG_EXT_FILE_FULL_PATHCONFIG_FILE_FULL_PATH} --no-check-certificate -d -v ${{github.event.inputs.config_url}}
+        echo -e ""
+        echo -e "merge file"
+        cat ${DIY_CONFIG_EXT_FILE_FULL_PATH} >> ${DIY_CONFIG_EXT_FILE_FULL_PATH}
+
+    - name: ljx,copy diy config.txt to [.config] from path
+      if: (github.event.inputs.config_path != 'false' && github.event.inputs.config_path != '')
+      working-directory: /workdir
+      run: |
+        echo ""
+        echo "try cp [${{github.event.inputs.config_path}}] to [${DIY_CONFIG_FILE_FULL_PATH}]"
+        cd $GITHUB_WORKSPACE
+        [ ! -e ${DIY_CONFIG_FILE_FULL_PATH} ] && [ -e ${{github.event.inputs.config_path}} ] && echo "cp file to ${DIY_CONFIG_FILE_FULL_PATH}";cp ${{github.event.inputs.config_path}} ${DIY_CONFIG_FILE_FULL_PATH}
+
+
+
+    - name: ljx,echo current date to grub title,edit .config
+      if: (github.event.inputs.config_add_date_to_grub_title != 'false' && github.event.inputs.config_add_date_to_grub_title != '')
+      run: |
+        echo ""
+        echo "echo build date to .config"
+        [ ! -e $CONFIG_FILE_FULL_PATH ] && touch $CONFIG_FILE_FULL_PATH
+        echo CONFIG_GRUB_TITLE=\"OpenWrt,Lean x64,ljx,Build on $(date +%F_%T)\" >> $CONFIG_FILE_FULL_PATH
+        echo ""
+        echo "show $CONFIG_FILE_FULL_PATH"
+        tail $CONFIG_FILE_FULL_PATH
+
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+
+    - name: ljx,echo current date to grub title,edit .config,base on ssh is run
+      if: (github.event.inputs.config_add_date_to_grub_title != 'false' && github.event.inputs.config_add_date_to_grub_title != '' && github.event.inputs.config_add_date_to_grub_title != 'false' && github.event.inputs.config_add_date_to_grub_title != '')
+      run: |
+        echo ""
+        echo "echo build date to .config"
+        [ ! -e $CONFIG_FILE_FULL_PATH ] && touch $CONFIG_FILE_FULL_PATH
+        echo CONFIG_GRUB_TITLE=\"OpenWrt,Lean x64,ljx,Build on $(date +%F_%T)\" >> $CONFIG_FILE_FULL_PATH
+        echo ""
+        echo "show $CONFIG_FILE_FULL_PATH"
+        tail $CONFIG_FILE_FULL_PATH
+
+
+    - name: Download package
+      id: package
+      run: |
+        cd /workdir/openwrt
+        make defconfig
+        make download -j8 V=s
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: Compile the firmware
+      id: compile
+      run: |
+        cd /workdir/openwrt
+        echo -e "$(nproc) thread compile"
+        #make -j$(nproc) || make -j1 || make -j1 V=s
+        #make -j1 || make -j1 V=s
+        make -j$(nproc) V=s
+        echo "status=success" >> $GITHUB_OUTPUT
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+
+    - name: ljx-df
+      working-directory: /workdir
+      run: |
+        echo -e ""
+        echo -e "df $PWD"
+        df -hT $PWD
+
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT
+
+    - name: Upload bin directory
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
+
+    - name: Organize files
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: Upload firmware to cowtransfer
+      id: cowtransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware to WeTransfer
+      id: wetransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
+
+    - name: Generate release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        touch release.txt
+        [ $UPLOAD_COWTRANSFER = true ] && echo "?? [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WETRANSFER = true ] && echo "?? [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
+
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.2.1
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 40
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
