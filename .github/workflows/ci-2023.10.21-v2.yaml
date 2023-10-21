@@ -20,7 +20,7 @@ on:
     inputs:
 
       config_desc:
-        description: 'config desc'
+        description: 'input config desc'
         required: false
         default: 'false'
 
@@ -369,8 +369,8 @@ jobs:
         [ ! -e $CONFIG_FILE_FULL_PATH ] && touch $CONFIG_FILE_FULL_PATH
         #echo CONFIG_GRUB_TITLE=\"OpenWrt Lean,ljx,Build on $(date +%F_%T)\" >> $CONFIG_FILE_FULL_PATH
         echo "#" >> $CONFIG_FILE_FULL_PATH
-		echo "#ssh" >> $CONFIG_FILE_FULL_PATH
-        echo "#$(date +%F_%T)" >> $CONFIG_FILE_FULL_PATH
+        echo "#ssh" >> $CONFIG_FILE_FULL_PATH
+        echo "#date:$(date +%F_%T)" >> $CONFIG_FILE_FULL_PATH
         echo "#" >> $CONFIG_FILE_FULL_PATH
         echo ""
         echo "show $CONFIG_FILE_FULL_PATH"
@@ -385,7 +385,7 @@ jobs:
         echo "echo desc to .config"
         [ ! -e $CONFIG_FILE_FULL_PATH ] && touch $CONFIG_FILE_FULL_PATH
         echo "#" >> $CONFIG_FILE_FULL_PATH
-		echo "#config_desc=${{github.event.inputs.config_desc}}" >> $CONFIG_FILE_FULL_PATH
+        echo "#config_desc=${{github.event.inputs.config_desc}}" >> $CONFIG_FILE_FULL_PATH
         echo "#date:$(date +%F_%T)" >> $CONFIG_FILE_FULL_PATH
         echo "#" >> $CONFIG_FILE_FULL_PATH
         echo ""
@@ -406,6 +406,8 @@ jobs:
       run: |
         cd /workdir/openwrt
         echo -e "$(nproc) thread compile"
+
+        #old
         #make -j$(nproc) || make -j1 || make -j1 V=s
         #make -j1 || make -j1 V=s
         #make -j$(nproc) V=s
