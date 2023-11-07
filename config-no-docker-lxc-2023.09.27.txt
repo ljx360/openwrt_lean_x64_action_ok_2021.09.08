@@ -1,3 +1,7 @@
+#ljx
+#no docker,no lxc
+#2023.09.27
+
 
 CONFIG_TARGET_x86=y
 CONFIG_TARGET_x86_64=y
