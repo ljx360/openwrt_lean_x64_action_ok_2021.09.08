@@ -14,7 +14,7 @@ CONFIG_GRUB_TIMEOUT="3"
 CONFIG_GRUB_TITLE="OpenWrt,Lean x64,ljx"
 
 
-#CONFIG_ISO_IMAGES=y
+CONFIG_ISO_IMAGES=y
 CONFIG_QCOW2_IMAGES=y
 #CONFIG_VDI_IMAGES=y
 CONFIG_VMDK_IMAGES=y
@@ -34,7 +34,7 @@ CONFIG_PACKAGE_luci-app-frps=y
 CONFIG_PACKAGE_luci-app-docker=y
 CONFIG_PACKAGE_luci-app-hd-idle=y
 
-#CONFIG_PACKAGE_luci-app-lxc=y
+CONFIG_PACKAGE_luci-app-lxc=y
 CONFIG_PACKAGE_luci-app-nlbwmon=y
 
 CONFIG_PACKAGE_luci-app-openvpn=y
