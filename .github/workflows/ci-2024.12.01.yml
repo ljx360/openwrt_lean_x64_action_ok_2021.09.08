@@ -101,13 +101,13 @@ env:
 
 jobs:
   build:
-    runs-on: debian-12
+    #runs-on: debian-12
     #runs-on: debian-11
     #runs-on: debian-latest
     
     #runs-on: ubuntu-22.04
     #runs-on: ubuntu-24.04
-    #runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
