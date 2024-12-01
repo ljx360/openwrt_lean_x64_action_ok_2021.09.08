@@ -101,12 +101,12 @@ env:
 
 jobs:
   build:
-    #runs-on: debian-12
+    runs-on: debian-12
     #runs-on: debian-11
     #runs-on: debian-latest
     
     #runs-on: ubuntu-22.04
-    runs-on: ubuntu-24.04
+    #runs-on: ubuntu-24.04
     #runs-on: ubuntu-latest
 
     steps:
@@ -125,6 +125,7 @@ jobs:
       run: |
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir/ljx
+        sudo mkdir -p /workdir/openwrt
         sudo chown -R $USER:$GROUPS /workdir
 
 
@@ -189,8 +190,9 @@ jobs:
         #2022.11.28
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
 
-        echo "apt-get update"
+        echo "apt-get update,upgrade"
         sudo -E apt -yqq update
+        sudo -E apt -yqq full-upgrade
 
 
     - name: ljx-df
@@ -205,6 +207,8 @@ jobs:
         echo ""
         echo "apt-get install"
         sudo -E apt -yqq  install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        #2024.12.01
+        #sudo -E apt -yqq  install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool llvm lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 
     - name: ljx-df
       working-directory: /workdir
